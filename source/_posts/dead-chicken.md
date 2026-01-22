@@ -62,13 +62,13 @@ $$
 不妨将所有的路径按服从的死亡集合分组。对于某条 $\mathcal C\sim \mathcal K$，不难得到上面需要求出的每个 $L_i$ 实际上就是 $N-i\text{ 之前死掉的个数}$，于是就变成了
 
 $$
-\mathbb P(\mathcal C)={\large (}n^{k_1}\times(n-1)^{k_2}\times\cdots(n-k)^{k_k}{\large )}^{-1}
+\mathbb P(\mathcal C)=\left (n^{k_1}\times(n-1)^{k_2}\times\cdots(n-k)^{k_k}\right )^{-1}
 $$
 
 这样就可以很方便地求出所有服从某一组 $K$ 的路径总概率，即 
 
 $$
-\mathbb P\{\mathcal C:\mathcal C\sim K\}=\sum_{\mathcal C\sim \mathcal K}\mathbb P(\mathcal C)=\dfrac{{\large|}\{\mathcal C|\mathcal C\sim K\}{\large|}}{\displaystyle\prod_{i=0}^k (n-i)^{k_{i+1}-k_i}}
+\mathbb P\{\mathcal C:\mathcal C\sim K\}=\sum_{\mathcal C\sim \mathcal K}\mathbb P(\mathcal C)=\dfrac{\left|\{\mathcal C\mid\mathcal C\sim K\}\right|}{\displaystyle\prod_{i=0}^k (n-i)^{k_{i+1}-k_i}}
 $$
 
 于是我们的任务就变成求分子这个集合的元素个数了。概率问题变成了计数问题。
