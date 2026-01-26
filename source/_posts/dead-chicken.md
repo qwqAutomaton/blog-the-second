@@ -160,10 +160,20 @@ $$
 \end{aligned}
 $$
 
-所以总的概率
+所以总的概率（用各段长 $\ell_i=k_{i+1}-k_i$ 替代 $k$，那么 $l_i=\ell_i-1$，且诸 $\ell$ 为正整数、总和为 $m$）就是
 
 $$
-\mathbb P_{n,m}\{\text{死了 }k\text{ 只鸡}\}=\sum_{\text{len }\mathcal K=k}\mathbb P\{\mathcal C:\mathcal C\sim\mathcal K\}
+\begin{aligned}
+&\mathbb P_{n,m}\{\text{死了 }k\text{ 只鸡}\}\\
+=&\sum_{\mathcal K:|\mathcal K|=k}\mathbb P\{\mathcal C:\mathcal C\sim\mathcal K\}\\
+\\
+=&\sum_{\mathcal L:|\mathcal L|=k+1}\dfrac{\dfrac{n!}{(n-m+k)!}\times\displaystyle\sum_{\substack{
+    \sum a=k\\
+    a_i\ge 0\\
+    a_0+\cdots+a_r\ge r
+    }
+}\left[\left(\prod_{i=0}^k{l_i\choose a_i}\right)\left(\prod_{i=1}^k(a_0+\cdots+a_{i-1}-(i-1))\right)\right]}{\displaystyle\prod_{i=0}^k (n-i)^{\ell_i}}\\
+\end{aligned}
 $$
 
 所求的期望就是
@@ -192,32 +202,127 @@ $$
 于是单独把这个和拎出来：
 
 $$
-\boxed{A=\sum_{\substack{
+\boxed{A(k)=\sum_{\substack{
     \sum a=k\\
     a_i\ge 0\\
     a_0+\cdots+a_r\ge r
     }
-}\left[\left(\prod_{i=0}^k{\ell_i-1\choose b_{i+1}-b_i+1}\right)\left(\prod_{i=1}^k(a_0+\cdots+a_{i-1}-(i-1))\right)\right]}
+}\left[\left(\prod_{i=0}^k{\ell_i-1\choose a_i}\right)\left(\prod_{i=1}^k(a_0+\cdots+a_{i-1}-(i-1))\right)\right]}
 $$
 
-如果令 $S_i=a_0+\cdots+a_i$ 是部分和，那么就有
+后面这一大坨很难受。因此考虑令 $b_i=a_0+\cdots+a_i-i$ 为部分和减去标号的差。那么翻译一下限制：
+
+- $b_k=0$;
+- $b_r\ge 0$ 对所有的 $r=0\cdots k$;
+- $b_r-b_{r-1}=a_r-1\ge -1$.
+- $b_0=a_0$ 显然。
+
+并用之前的 $l_i$ 替换 $\ell_i-1$（后面会换回来的），那么被求和的柿子就变成
 
 $$
-A=\sum_{\mathcal A}\left[\left(\prod_{i=0}^k{\ell_i-1\choose a_i}\right)\left(\prod_{i=0}^{k-1}(S_i-i)\right)\right]
+\begin{aligned}
+A=&\sum_{\mathcal B}\left[\left(\prod_{i=1}^k b_i\right)\prod_{i=0}^k{l_i\choose b_i-b_{i-1}+1}\right]\\
+=&\sum_{\mathcal B}{l_0\choose b_0}\prod_{i=1}^k\left(b_i\cdot{l_i\choose b_i-b_{i-1}+1}\right)
+\end{aligned}
 $$
 
-并且应满足（实际上就是翻译一下 $\mathcal A$）的限制：
+这里的一条路径 $\mathcal B$ 就是一条：从 $b_0\ge 1$ 出发、每次前进任意步或至多后退一步、第 $k$ 步之后回到 $0$ 的路径。
 
-- $S_k=k$;
-- $S_i$ 不减；
-- $S_i\ge i$ 对所有的 $i$;
-- $S_0=a_0$.
+> 闲话：这种路径应该叫 Dyck 路径，性质似乎不错（而且非常 Catalan）。
 
-应该不难 **注意到**：由于 $S_k=k$ 且诸 $a_i$ 非负，第二坨乘积很容易变成零。因此考虑这一大坨什么时候非零，即什么时候 $S_r>r$ 对于所有的 $r$ 均成立。
+**注意到** 被求和的考虑求一下 $A(k)$ 关于 $k$ 的递归式。将整条路径按照第一次到达 $0$ 前后划分（设 $b_m=0$ 且 $b_{m'}>0$ 对所有的 $m'<m$），那么此时这条路径对总和的贡献就是
 
-直接考虑最后一个和倒数第二个。$S_k=k,S_{k-1}>k-1$ 容易得到 $S_{k-1}=k$. 同样分析第一个（$S_0$）我们可以得到 $S_0=a_0\neq 0$. 另外，根据第一坨乘积，$a_i\le\ell_i$.
+$$
+\begin{aligned}
+&{\ell_0-1\choose a_0}\prod_{i=1}^k\left(b_i\cdot{\ell_i-1\choose b_i-b_{i-1}+1}\right)\\
+=&{\ell_0-1\choose a_0}\left[\prod_{i=1}^m\left(b_i\cdot{\ell_i-1\choose b_i-b_{i-1}+1}\right)\right]\left[\prod_{i=m+1}^k\left(b_i\cdot{\ell_i-1\choose b_i-b_{i-1}+1}\right)\right]
+\end{aligned}
+$$
 
-推不下去了。
+... 算了求不出来
+
+还是看看渐进吧。
+
+记
+
+$$
+Z_{n,m}(k)=\mathbb P\{死了k只鸡\}=系数\times\sum_{\ell}\dfrac{\displaystyle\sum_a\left[(整式)\times\prod{\cdot\choose\cdot}\right]}{\displaystyle\prod_{0\le i\le k}(n-i)^{\ell_i}}
+$$
+
+那么死鸡数期望归一化后（理解为某鸡砍腿之后死的概率？）就是
+
+$$
+\overline {Z_{n,m}}=\dfrac{\sum_{k\ge 0}Z_{n,m}(k)\cdot k}{\sum_{k\ge 0}Z_{n,m}(k)}
+$$
+
+由于原题目 $n=m=10^6$ 很大，看看渐进倒也不影响结果。
+
+接下来就开始解析了。由于关注的是渐进，我们可以预料到它之和极点有关；因此可以忽略上面的整式，只关注分母和二项式系数。
+
+先处理分母。构造一组生成函数
+
+$$
+\begin{aligned}
+f_r(z)=\sum_{j\ge 0}(\dfrac z{n-r})^j=\sum_{j\ge 0}(n-r)^{-j}z^j=\dfrac 1{1-\dfrac{z}{n-r}}
+\end{aligned}
+$$
+
+收敛区间分别为 $|z| < |n-r|$. 那么原来分母中各项就可以表示为 $[z^{\ell_r}]f_r(z)$.
+
+**注意到** 诸 $\ell$ 之和是定值 $m$，很自然地想到将这一组函数乘起来，然后直接比较 $z^m$ 项系数。那么
+
+$$
+\begin{aligned}
+F(z)=&\prod_{r=0}^k\dfrac 1{1-\dfrac{z}{n-r}}=\prod_r f_r\\
+=&\prod_r\sum_j(n-r)^{-j}z^j\\
+=&\sum_j\left(\sum_{w_0+w_1+\cdots+w_k=j}\prod_r(n-r)^{w_r}\right)z^j
+\end{aligned}
+$$
+
+不难看出分母就是 $[z^m]F(z)$.
+
+利用 $z=0$ 处的 Taylor 结合 Cauchy 积分公式就有
+
+$$
+\begin{aligned}
+[z^m]F(z)&=\dfrac{F^{(m)}(z)}{m!}=\dfrac 1{2i\pi}\oint_\gamma\dfrac{F(\xi)}{\xi^{m+1}}\text d\xi\\
+&=\dfrac1{2\pi i}\oint_\gamma\dfrac {\text d\xi}{\xi^{m+1}}\prod_{r=0}^k\dfrac1{1-\dfrac \xi{n-r}}
+\end{aligned}
+$$
+
+其中积分路径 $\gamma: |z|<\rho$，并任取半径 $\rho<|n-k|$ 即可。
+
+分母做完了做二项式系数。首先是一般的二项式系数的积分表示（Egorychev 法？）
+
+$$
+{n\choose r}=\dfrac 1{2\pi i}\oint_{\gamma'}\dfrac{(1+z)^n}{z^{r+1}}\text dz
+$$
+
+被积式的奇点为 $0$ 和 $-1$，因此取 $\gamma':|z|<\eta<1$ 即可。那么
+
+$$
+\begin{aligned}
+&\sum_{\substack{ a0+\cdots+a_k=k\\ a_i\ge 0\\ a_0+\cdots+a_r\ge r } }\left[\left(\prod_{i=0}^k{
+\ell_i-1\choose a_i}\right)\left(\prod_{i=1}^k(a_0+\cdots+a_{i-1}-(i-1))\right)\right]\\
+=&\sum_{\mathcal A}W(\mathcal A)\cdot\dfrac 1{(2\pi i)^{k+1}}\oint\cdots\oint\dfrac{\prod (1+z_i)^{\ell-1}}{\prod z_i^{a_i+1}}\text d{\bf z}
+\end{aligned}
+$$
+
+代入！
+
+$$
+\begin{aligned}
+&Z_{n,m}(k)\\
+=&\sum_{\sum \ell=m}\dfrac{\dfrac{n!}{(n-m+k)!}\times\displaystyle\sum_{\substack{ a0+\cdots+a_k=k\\ a_i\ge 0\\ a_0+\cdots+a_r\ge r } }\left[\left(\prod_{i=0}^k{
+\ell_i-1\choose a_i}\right)\left(\prod_{i=1}^k(a_0+\cdots+a_{i-1}-(i-1))\right)\right]}{\displaystyle\prod_{i=0}^k (n-i)^{\ell_i}}\\
+=&\dfrac{n!}{(n-m+k)!}\times\dfrac1{2\pi i}\oint_\gamma\dfrac {\text d\xi}{\xi^{m+1}}\prod_{r=0}^k\dfrac1{1-\frac \xi{n-r}}\\
+&\times\sum_\ell\left(\sum_{\mathcal A}W(\mathcal A)\cdot\dfrac 1{(2\pi i)^{k+1}}\oint\cdots\oint\dfrac{\prod (1+z_i)^{\ell-1}}{\prod z_i^{a_i+1}}\text d{\bf z}\right)\\
+=&\dfrac{n!}{(n-m+k)!}\cdot\dfrac1{(2\pi i)^{k+2}}\cdot\oint\cdots\oint\dfrac1{t^{m+1}}\left(\sum_{\mathcal A}\dfrac{W(\mathcal A)}{\prod_{r=0}^k z_r^{a_r+1}}\right)\left(\prod_{r=0}^k\left(1-\dfrac{1+z_r}{n-r}t\right)^{-1}\right)\text d{\bf z}\text dt\\
+=&\dfrac{(2\pi i)^{-k-2}\cdot n!}{(n-m+k)!}\cdot\boxed{\oint\cdots\oint\dfrac{\mathcal R_{n,m,k}(z)}{t^{m+1}}\left(\prod_{r=0}^k\left(1-\dfrac{t}{n-r}\right)^{-1}\right)\text d{\bf z}\text dt}
+\end{aligned}
+$$
+
+我们只关心 $t$ 上的奇点 $\to$ 渐进行为。再说了
 
 ## 推广
 
